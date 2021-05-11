@@ -1,0 +1,107 @@
+---
+title: "Hotel Cancellations"
+output: html_document
+---
+
+```{r}
+rm(list=ls())
+
+library(dplyr)
+library(tidymodels)
+library(ggplot2)
+library(ggeasy)
+
+
+data <- read.csv("hotel_bookings.csv")
+head(data)
+
+
+unique(data$lead_time)
+```
+# EDA
+
+```{r}
+# Interesting note about patrons, supposedly 403 of the observations have no adults registered and 32 of those observations no adult, children, or babies
+data %>%
+  group_by(adults) %>%
+  count()
+test_adults <- data %>%
+  filter(adults == 0, children == 0, babies == 0)
+test
+
+
+#Cancellations by type of Hotel
+hotel_cancel <-  data %>%
+  group_by(hotel) %>%
+  summarise(Cancelation_Rate = round(mean(is_canceled)*100,2)) 
+hotel_cancel
+
+Cancelation_by_hotel_type <- ggplot(data = hotel_cancel, aes(x = hotel, y = Cancelation_Rate, label = Cancelation_Rate)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_text(size = 5, position = position_stack(vjust = 0.5)) +
+  xlab("Type of Hotel") +
+  ylab("Cancelation Rate (%)") +
+  ggtitle("Cancelation Rate by Hotel Type") +
+  theme_classic()+
+  ggeasy::easy_center_title()
+
+
+Cancelation_by_hotel_type
+
+
+# Cancellations with children/babies
+# created a column if the people had children
+family_cancel <- data %>%
+  mutate(has_children = if_else(children > 0 | babies > 0, 1, 0)) %>%
+  na.omit()
+
+#data is heavily skewed away from children
+
+family_cancel %>%
+  group_by(hotel) %>%
+  summarise(freq = round(mean(has_children)*100,2))
+
+family_cancel_1 <- family_cancel %>%
+  filter(has_children > 0) %>%
+  group_by(hotel) %>%
+  summarise(Cancelation_Rate = round(mean(is_canceled)*100,1))
+
+family_cancel_1
+
+
+Cancelation_by_children <- ggplot(data = family_cancel_1, aes(x = hotel, y = Cancelation_Rate, label = Cancelation_Rate)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_text(size = 5, position = position_stack(vjust = 0.5)) +
+  xlab("Type of Hotel") +
+  ylab("Cancelation Rate (%)") +
+  ggtitle("Cancelation Rate by Hotel Type with Children") +
+  theme_classic()+
+  ggeasy::easy_center_title()
+
+Cancelation_by_children
+
+
+# Cancellations by lead time, With both types of hotels. Not much difference in the distributions when both types are separated
+cancel_lead_time <- data %>%
+  filter(lead_time <= 365) %>%
+  group_by(lead_time) %>% 
+  summarise(Cancellation_rate = round(mean(is_canceled)*100,1))
+
+cancel_lead_time
+
+cancel_by_lead_time <- ggplot(data = cancel_lead_time, aes(x = lead_time, y = Cancellation_rate)) +
+  geom_point() +
+  scale_x_continuous(breaks = c( 14,30,60, 90, 120, 180, 240, 365)) +
+  xlab("Lead Time") +
+  ylab("Cancelation Rate (%)") +
+  ggtitle("Cancelation Rate Based on Lead Time") +
+  theme_classic()+
+  ggeasy::easy_center_title()
+  
+                              
+cancel_by_lead_time
+?geom_bin2d
+```
+
+
+
