@@ -100,7 +100,61 @@ cancel_by_lead_time <- ggplot(data = cancel_lead_time, aes(x = lead_time, y = Ca
   
                               
 cancel_by_lead_time
-?geom_bin2d
+
+
+# Percent canceled by region
+region_canceled <- data %>%
+  group_by(country) %>%
+  summarise(Cancelelation_Rate = round(mean(is_canceled)*100,2))
+
+region_canceled
+
+
+# Distribution channel based on hotel type
+city_distribution <- data %>%
+  filter(hotel == "City Hotel", is_canceled == 1) %>%
+  group_by(distribution_channel) %>%
+  count()
+
+city_distribution
+
+city_distribution_cancel <- ggplot(data = city_distribution, aes(x = reorder( distribution_channel, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  xlab("Distribution Channel") +
+  ylab("Total Cancellations") +
+  ggtitle("Total City Cancelations Based on Distribution Channel") +
+  theme_classic()+
+  ggeasy::easy_center_title()
+
+city_distribution_cancel
+
+
+#Resort Hotel Distribution Cancellations
+resort_distribution <- data %>%
+  filter(hotel == "Resort Hotel", is_canceled == 1) %>%
+  group_by(distribution_channel) %>%
+  count()
+
+resort_distribution
+
+
+resort_distribution_cancel <- ggplot(data = resort_distribution, aes(x = reorder( distribution_channel, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  xlab("Distribution Channel") +
+  ylab("Total Cancellations") +
+  ggtitle("Total Resort Cancelations Based on Distribution Channel") +
+  theme_classic()+
+  ggeasy::easy_center_title()
+
+resort_distribution_cancel
+
+
+
+#portion of bookings by distribution channel
+portion_distribution_city <- data %>%
+  filter(hotel == "City") %>% 
+  group_by()
+
 ```
 
 
