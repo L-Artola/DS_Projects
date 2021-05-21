@@ -156,6 +156,8 @@ portion_distribution_city <- data %>%
   filter(hotel == "City") %>% 
   group_by()
 
+head(data)
+
 ```
 
 
