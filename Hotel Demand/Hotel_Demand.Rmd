@@ -16,7 +16,7 @@ data <- read.csv("hotel_bookings.csv")
 head(data)
 
 
-unique(data$lead_time)
+
 ```
 # EDA
 
@@ -27,7 +27,7 @@ data %>%
   count()
 test_adults <- data %>%
   filter(adults == 0, children == 0, babies == 0)
-test
+
 
 
 #Cancellations by type of Hotel
@@ -51,6 +51,7 @@ Cancelation_by_hotel_type
 
 # Cancellations with children/babies
 # created a column if the people had children
+# Had to omit NA's as there was 32 observations
 family_cancel <- data %>%
   mutate(has_children = if_else(children > 0 | babies > 0, 1, 0)) %>%
   na.omit()
